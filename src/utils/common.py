@@ -1,6 +1,21 @@
 import warnings
 import numpy as np
 
+def pretty_print_n(N):
+    """
+    Get a string representation of the number
+    """
+    order = int(np.log10(N))
+    powers = [12,9,6,3]
+    letters = ["T","G","M","k"]
+    for p,l in zip(powers,letters):
+        if order >= p:
+            num = round(N/10**p,3)
+            if (num==int(num)):
+                return "{:d}{}".format(int(num),l)
+            return "{:.2f}{}".format(num,l)
+    return N
+
 def normalize(arr, dim=-1):
     """
     Return array of the same shape, where the sum along dimension `dim` is 1
