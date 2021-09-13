@@ -109,7 +109,7 @@ if __name__ == "__main__":
         INIT_METHOD = args.init
     else:
         raise ValueError(f"Init method for the weights {args.init} is invalid")
-    
+    ## TODO: fix script, as we are not using the numbers in the layers
     next_near_neigh = True if not args.only_neigh else False
     if args.deeper:
         func_layers = [3/2, 3/2, 1]
@@ -243,6 +243,8 @@ if __name__ == "__main__":
             extra_saving_args["p_sus_max"] = p_sus_max
             extra_saving_args["p_sus_final"] = p_sus_sparse_obs
         """
+        for nm in my_net.dimensions():
+            print(nm)
 
         extra_saving_args["num_parameters"] = my_net.nparams
         print("Num parameters: ", my_net.nparams)
