@@ -7,7 +7,7 @@ import warnings
 import numpy as np
 import numba as nb
 
-import forward_sim.propagate as propagate
+from epigen import propagate
 
 def warn(msg):
     warnings.warn(msg, RuntimeWarning)

@@ -45,3 +45,17 @@ def sort_by_inf(M, t=0, sep=False):
     else:
         ### legacy format
         return np.stack((vals[idx],idx),1)
+
+
+def deprecated():
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            name = func.__name__
+            file = func.__code__.co_filename
+            line = func.__code__.co_firstlineno + 1
+            message = f'Call to deprecated function {name} in {file} at line {line}'
+            #message += f'\nIt will be removed in {removed_in_version}'
+            warnings.warn(message, DeprecationWarning)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

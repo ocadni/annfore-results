@@ -15,7 +15,7 @@ import soft_margin.utils as softm_utils
 import io_m.libsaving as libsaving
 import io_m.io_utils as io_utils
 
-from .saving import SoftMarginSaver
+from .saving import SoftMarginSaver, load_data_softmargin
 from . import run_sim
 import soft_margin.singleiter as singleit
 
@@ -339,8 +339,6 @@ class SoftMarginRunnerSaver(SoftMarginRunner):
             self.saver.save_src_probabilities(self.final_p_sources,
             self.a_pars, overwrite=True)
             self.saver.save_params()
-
-load_data_softmargin = libsaving.load_data_softmargin
 
 
 @njit()

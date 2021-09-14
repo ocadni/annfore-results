@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.metrics import auc
 
 import utils.common as common_utils
-import sys
-sys.path.insert(0, '../')
+#import sys
+#sys.path.insert(0, '../')
 
 sort_I = common_utils.sort_by_inf
 
