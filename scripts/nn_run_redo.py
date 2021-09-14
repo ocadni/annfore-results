@@ -73,7 +73,7 @@ def add_arg_parser(parser):
     parser.add_argument("--p_sus", type=float, default=-1, help="Parameter p_sus for the model")
     parser.add_argument("--debug")
     parser.add_argument("--init", type=str, default="xavier", help="Initialization method for the weights")
-    parser.add_argument("--lin_net_pow", type=float, default=2., help="Power to which scale the linear linear")
+    parser.add_argument("--lin_net_pow", type=float, default=2., help="Power to which scale the linear layers")
 
 
     parser.add_argument("--exp_like_beta",action="store_true", help="beta annealing with more exponential like sequence of beta")
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     elif args.lay_deep_eq:
         func_layers = [1, 1]
     elif args.lay_deep_sc:
-        func_layers = [1/2, 1/3, 1/4, 1/3, 1/2]
+        func_layers = [1/2, 1/2, 1/3, 1/3]
     elif args.lay_less_deep:
         func_layers = [1/2, 1/2, 1]
         #raise NotImplementedError
