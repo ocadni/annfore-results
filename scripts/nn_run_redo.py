@@ -7,23 +7,13 @@ import json
 import numpy as np
 import torch
 
-'''
-##FIND CORRECT DIR
-c = Path().resolve()
-for i in range(len(c.parents)):
-    n = c.parents[i].stem
-    if n == "nn_epidemics":
-        root = c.parents[i]
-SRC_FOLDER=root / "src"
-print(Path(SRC_FOLDER).resolve())
-sys.path.append(SRC_FOLDER.as_posix() + "/")
-'''
+import epigen.generators as generat
+from epigen.epidemy_gen import make_stats_observ
 
 from annfore.net import nn_sir_path_obs
 from annfore.utils.graph import find_neighs
 from annfore.models import common as en_common
 from annfore.models import sir_model_N_obs
-import epigen.generators as generat
 
 
 from annfore.learn.losses import loss_fn_coeff, loss_fn_coeff_p_sus
@@ -38,6 +28,7 @@ path_script = Path(sys.argv[0]).parent.absolute()
 sys.path.append(os.fspath(path_script.parent))
 from src.utils.script_utils import create_parser, create_data_
 
+N_LAYS_DEFAULT = 3
 
 def add_arg_parser(parser):
     # neural network options
@@ -55,11 +46,14 @@ def add_arg_parser(parser):
                     help="Set the number of total steps for beta annealing (instead of the step size)")
     parser.add_argument('--iter_marginals', type=int, default=100, dest="iter_marginals", help="number of steps for computing marginals")
     parser.add_argument('--continuous', action="store_true", help="use continuos model")
-    parser.add_argument('--deeper', action="store_true", help="use continuos model")
-    parser.add_argument('--less_deep', action="store_true", help="use continuos model")
-    parser.add_argument('--deep_eq', action="store_true", help="2 hidden layers of 1")
-    parser.add_argument('--deep_sc', action="store_true", help="layers 1 ,1/2, 1")
-
+    parser.add_argument("--n_hidden_layers", type=int, default=-1, help="Number of hidden layers to use, default 3")
+    parser.add_argument('--lay_deeper', action="store_true", help="use continuos model")
+    parser.add_argument('--lay_less_deep', action="store_true",
+        help="Hidden layers of 1/2, 1/2, 1")
+    parser.add_argument("--lay_std_deep", action="store_true",
+        help="Fixed hidden layers of 3/2, 1")
+    parser.add_argument('--lay_deep_eq', action="store_true", help="Hidden layers of 1, 1")
+    parser.add_argument('--lay_deep_sc', action="store_true", help="Hidden layers of 1 ,1/2, 1")
     parser.add_argument('--opt', type=str, default="adam", dest="opt_algo", help="name of the optimization algorithm")
     parser.add_argument('--num_threads', type=int, default=None, dest="num_threads", help="set num_threads")
     parser.add_argument('--num_end_iter', type=int, default=100, dest="num_end_iter", help="number of itareations at the end of annealing process ")
@@ -68,6 +62,9 @@ def add_arg_parser(parser):
     parser.add_argument('--save_net', action="store_true", help="save neural net")
     parser.add_argument('--only_neigh', action="store_true", help="consider only nearest neighs")
     parser.add_argument('--MF', action="store_true", help="consider no neighs [MeanField version]")
+    parser.add_argument("--all_graph_neighs", action="store_true",
+                    help="Set all individuals as neighbors, no k-th neighbor approximation")
+
     parser.add_argument("--no_net_obs", action="store_true", help="do not pass observations to NN")
     parser.add_argument("--p_fin_bal", action="store_true", help="Use the prior for balanced final state, like psus in training")
     #parser.add_argument("--p_sus_nodes", action="store_true", help="Calculate psus separately for the nodes")
@@ -75,7 +72,8 @@ def add_arg_parser(parser):
     #parser.add_argument("--p_sus_forced",action="store_true", help="Force to use psus regardless of balanced final state prior")
     parser.add_argument("--p_sus", type=float, default=-1, help="Parameter p_sus for the model")
     parser.add_argument("--debug")
-    parser.add_argument("--init", type=str, default="uniform", help="Initialization method for the weights")
+    parser.add_argument("--init", type=str, default="xavier", help="Initialization method for the weights")
+    parser.add_argument("--lin_net_pow", type=float, default=2., help="Power to which scale the linear linear")
 
 
     parser.add_argument("--exp_like_beta",action="store_true", help="beta annealing with more exponential like sequence of beta")
@@ -99,6 +97,7 @@ if __name__ == "__main__":
     #p_sus_sparse_obs = 1.-1/((args.t_limit+1)*(args.t_limit+1))
     USE_PSUS_FINALT = args.sparse_obs
     USE_LOSS_PSUS_BETA = args.sparse_obs
+
     #P_SUS_FIXED = args.p_sus_fixed if args.p_sus_fixed > 0 else None
 
     #FORCE_PSUS = args.p_sus_forced
@@ -109,19 +108,34 @@ if __name__ == "__main__":
         INIT_METHOD = args.init
     else:
         raise ValueError(f"Init method for the weights {args.init} is invalid")
-    ## TODO: fix script, as we are not using the numbers in the layers
-    next_near_neigh = True if not args.only_neigh else False
-    if args.deeper:
+    
+    NEXT_NEAR_NEIGH = True if not args.only_neigh else False
+    if args.all_graph_neighs:
+        ### we have to set the whole graph as neighbors of each node
+        NEXT_NEAR_NEIGH = 10
+    
+    func_layers =["none"]*args.n_hidden_layers
+    if (args.n_hidden_layers != -1) and (
+        args.lay_deeper or args.lay_std_deep or args.lay_less_deep or args.lay_deep_eq or args.lay_deep_sc):
+        raise ValueError("Use either '--n_hidden_layers' or a fixed depth")
+    
+    if (args.n_hidden_layers == -1):
+        args.n_hidden_layers=N_LAYS_DEFAULT
+
+    if args.lay_deeper:
         func_layers = [3/2, 3/2, 1]
-    elif args.deep_eq:
+    elif args.lay_deep_eq:
         func_layers = [1, 1]
-    elif args.deep_sc:
+    elif args.lay_deep_sc:
         func_layers = [1/2, 1/3, 1/4, 1/3, 1/2]
-    elif args.less_deep:
+    elif args.lay_less_deep:
         func_layers = [1/2, 1/2, 1]
         #raise NotImplementedError
-    else:
+    elif args.lay_std_deep:
         func_layers = [3/2,1]
+    else:
+        func_layers = [-2]*args.n_hidden_layers
+
 
     opt_algo = args.opt_algo
 
@@ -141,6 +155,11 @@ if __name__ == "__main__":
                                     use_inst_name=True)
     if data_ == None:
         quit()
+    if args.sparse_obs:
+        ## make statistics on the observations
+        df_all_obs = make_stats_observ(np.array(data_["test"]),  data_["observ_df"])
+
+        print(df_all_obs[args.start_conf:])
 
 ## ************ SET data-dependent ALGORITHM PARAMETER ************
 
@@ -170,7 +189,7 @@ if __name__ == "__main__":
     nfeat = int(max(contacts[:, 0]) + 3)
   
     if not args.MF:
-        neighs = find_neighs(contacts,N=N,only_minor=True, next_near_neigh=next_near_neigh)
+        neighs = find_neighs(contacts,N=N,only_minor=True, next_near_neigh=NEXT_NEAR_NEIGH)
     else:
         neighs = [[] for n in range(N)]
 
@@ -226,11 +245,14 @@ if __name__ == "__main__":
                     device = device,
                     in_func=torch.nn.LeakyReLU(),
                     bias=BIAS_NETS,
+                    lin_scale_power=args.lin_net_pow
                     )
 
         my_net.init(method=INIT_METHOD)
         #in_func=torch.nn.LeakyReLU()
         masks = my_net.masks.numpy()
+        for n in my_net.dimensions():
+            print(n)
         ## check if we have a fixed psus
         """if args.p_sus_fixed > 0:
             p_sus_sparse_obs = args.p_sus_fixed
@@ -243,8 +265,6 @@ if __name__ == "__main__":
             extra_saving_args["p_sus_max"] = p_sus_max
             extra_saving_args["p_sus_final"] = p_sus_sparse_obs
         """
-        for nm in my_net.dimensions():
-            print(nm)
 
         extra_saving_args["num_parameters"] = my_net.nparams
         print("Num parameters: ", my_net.nparams)
@@ -319,9 +339,10 @@ if __name__ == "__main__":
             else:
                 loss_fun = loss_fn_coeff
                 extra_args = None
-            results = train_beta(my_net, optimizer, 
-                        model, name_file_instance, 
-                        loss_fun, t_obs, 
+            
+            results = train_beta(my_net, optimizer,
+                        model, name_file_instance,
+                        loss_fun, t_obs,
                         num_samples=num_samples,
                         train_step = make_training_step_local,
                         betas=betas, save_every=200,
@@ -370,6 +391,6 @@ if __name__ == "__main__":
                     results=results,
                     num_samples=num_samples,
                     train_step = make_training_step_local,
-                    num_iter=iter_marginals);
+                    num_iter=iter_marginals)
         if args.save_net:
             torch.save(my_net, name_file_instance + ".pt" )
