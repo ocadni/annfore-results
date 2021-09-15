@@ -13,10 +13,10 @@ import pandas as pd
 from epigen.epidemy_gen import epidemy_gen_new
 
 path_script = Path(sys.argv[0]).parent.absolute()
-sys.path.append(os.fspath(path_script.parent))
+sys.path.append(os.fspath(path_script.parent/"src"))
 
 
-from src.utils.script_utils import create_parser, create_data_
+from utils.script_utils import create_parser, create_data_
 try:
     import sib
 except ImportError:

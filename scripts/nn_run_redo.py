@@ -25,8 +25,8 @@ from annfore.learn.train_params import learn_lamb_mu, learn_gamma_mu
 from annfore.learn.l_utils import make_beta_sequence_three as make_beta_seq
 
 path_script = Path(sys.argv[0]).parent.absolute()
-sys.path.append(os.fspath(path_script.parent))
-from src.utils.script_utils import create_parser, create_data_
+sys.path.append(os.fspath(path_script.parent / "src"))
+from utils.script_utils import create_parser, create_data_
 
 N_LAYS_DEFAULT = 3
 

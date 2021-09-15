@@ -5,7 +5,6 @@ import warnings
 import numpy as np
 
 from epigen import epidemy_gen_new, EpInstance
-from ..io_m import libsaving
 import epigen.generators as generat
 from epigen import gen_observ
 

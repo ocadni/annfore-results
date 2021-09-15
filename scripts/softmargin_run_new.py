@@ -12,11 +12,11 @@ import numpy as np
 import numba as nb
 ##FIND CORRECT DIR
 path_script = Path(sys.argv[0]).parent.absolute()
-sys.path.append(os.fspath(path_script.parent))
+sys.path.append(os.fspath(path_script.parent / "src"))
 
 
-import src.soft_margin.soft_margin as soft_margin
-from src.utils.script_utils import create_parser, create_data_
+import soft_margin.soft_margin as soft_margin
+from utils.script_utils import create_parser, create_data_
 from epigen import propagate
 
 def add_arg_parser(parser):

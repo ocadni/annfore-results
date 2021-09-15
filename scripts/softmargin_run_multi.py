@@ -8,17 +8,18 @@ import time
 from pathlib import Path
 import numpy as np
 import numba as nb
+
+from epigen import propagate
 ##FIND CORRECT DIR
 path_script = Path(sys.argv[0]).parent.absolute()
-sys.path.append(os.fspath(path_script.parent))
+sys.path.append(os.fspath(path_script.parent+"/src"))
 
-import src.soft_margin.soft_margin as soft_margin
-import src.io_m.libsaving as libsaving
-from src.io_m import io_utils
-from src.io_m import mlogging
-from src.utils.script_utils import create_parser, create_data_
-from src.utils.common import pretty_print_n
-from epigen import propagate
+import soft_margin.soft_margin as soft_margin
+import io_m.libsaving as libsaving
+from io_m import io_utils
+from io_m import mlogging
+from utils.script_utils import create_parser, create_data_
+from utils.common import pretty_print_n
 
 def add_arg_parser(parser):
 
