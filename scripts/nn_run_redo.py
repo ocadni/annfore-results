@@ -117,7 +117,7 @@ if __name__ == "__main__":
     func_layers =["none"]*args.n_hidden_layers
     if (args.n_hidden_layers != -1) and (
         args.lay_deeper or args.lay_std_deep or args.lay_less_deep or args.lay_deep_eq or args.lay_deep_sc):
-        raise ValueError("Use either '--n_hidden_layers' or a fixed depth")
+        raise ValueError("Use either '--n_hidden_layers' or a fixed layer flag")
     
     if (args.n_hidden_layers == -1):
         args.n_hidden_layers=N_LAYS_DEFAULT
