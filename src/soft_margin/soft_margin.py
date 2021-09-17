@@ -14,6 +14,7 @@ from epigen import propagate
 import soft_margin.utils as softm_utils
 import io_m.libsaving as libsaving
 import io_m.io_utils as io_utils
+from utils.common import normalize
 
 from .saving import SoftMarginSaver, load_data_softmargin
 from . import run_sim
@@ -422,7 +423,7 @@ def run_iteration_soft_margin(a_pars, p_sources, n_epi_per_a, contacts, inst, la
     if np.any(np.isnan(likelis)):
         warn("Likelihoods are nan")
 
-    posters = softm_utils.normalize(likelis*p_sources, 1)
+    posters = normalize(likelis*p_sources, 1)
     if np.any(np.isnan(posters)):
         warn("Posteriors are nan")
     if overw_log and prev_message is None:

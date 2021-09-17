@@ -12,7 +12,7 @@ import numba as nb
 from epigen import propagate
 ##FIND CORRECT DIR
 path_script = Path(sys.argv[0]).parent.absolute()
-sys.path.append(os.fspath(path_script.parent+"/src"))
+sys.path.append(os.fspath(path_script.parent/"src"))
 
 import soft_margin.soft_margin as soft_margin
 import io_m.libsaving as libsaving
