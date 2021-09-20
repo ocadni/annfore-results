@@ -48,7 +48,7 @@ for seed in {0..9}
 do
     #$python ./nn_run_redo.py $GEN_EPI $CONFS --seed $seed --p_source $p_source --path_dir $path_dir --n_beta_steps $n_beta_steps --device $device --iter_marginals $iter_marginals --lay_deep_eq
     $python ./sib_run_new.py $GEN_EPI $CONFS --seed $seed --path_dir $path_dir"sib" --p_source $p_source
-    #$python ./softmargin_run_multi.py $GEN_EPI $CONFS --seed $seed --path_dir $path_dir"/sm" --ncores $ncores --nsims_probs $nsims  --a_min $a_min --a_max $a_max --a_step $a_step --overwrite
+    #$python ./softmargin_run_multi.py $GEN_EPI $CONFS --seed $seed --path_dir $path_dir --ncores $ncores --nsims_probs $nsims  --a_min $a_min --a_max $a_max --a_step $a_step --overwrite
     #done
 done
 
