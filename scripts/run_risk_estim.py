@@ -183,4 +183,4 @@ if __name__ == "__main__":
         res.sort(axis=0, order="idx")
         print("\n Saving")
         
-        np.savez_compressed(name_file_instance+"_rank.npz", ranking=res)
+        np.savez_compressed(name_file_instance+"_rank.npz", ranking=res, allow_pickle=False)
