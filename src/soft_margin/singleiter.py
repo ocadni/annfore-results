@@ -3,7 +3,7 @@ import numba as nb
 from . import run_sim
 import soft_margin.utils as softm_utils
 from epigen import propagate
-from utils.common import pretty_print_n
+from utils.common import pretty_print_n, normalize
 
 newax = np.newaxis
 
@@ -69,7 +69,7 @@ def run_oneit_softm_margs(a_pars, p_sources, n_epi_per_a, contacts, inst, last_o
     if np.any(np.isnan(likelis)):
         warn("Likelihoods are nan")
 
-    posters = softm_utils.normalize(likelis*p_sources, 1)
+    posters = normalize(likelis*p_sources, 1)
     if np.any(np.isnan(posters)):
         warn("Posteriors are nan")
     if overw_log and prev_message is None:
@@ -174,7 +174,8 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
                                          contacts, inst.mu, last_obs)
     if np.any(np.isnan(simils_idx)):
         warn("Jaccards are nan")
-
+    
+    np.savez("simils_idx", similarity=simils_idx)
     ### SINGLE ITER: simils is 1D array -> need to n_repeatbroadcast on zeroth dimension
     posteriors = []
     p_sources = p_sources[np.newaxis, :]
@@ -188,7 +189,7 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
             warn("Likelihoods are nan")
         #myprint(f"Likelihoods are {likelis.shape}")
 
-        posters = softm_utils.normalize(likelis*p_sources, 1)
+        posters = normalize(likelis*p_sources, 1)
         if np.any(np.isnan(posters)):
             warn("Posteriors are nan")
         posteriors.append(posters)
