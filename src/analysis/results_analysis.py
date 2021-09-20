@@ -2,11 +2,10 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import auc
 
-import utils.common as common_utils
+from utils.common import sort_by_inf as sort_I
+from utils.common import pretty_print_n
 #import sys
 #sys.path.insert(0, '../')
-
-sort_I = common_utils.sort_by_inf
 
 def sources_finder(ress, data_, num_conf, nsims, keys=["regressive", "sib", "sm"], ):
     marginals = {}
@@ -42,7 +41,7 @@ def sources_finder(ress, data_, num_conf, nsims, keys=["regressive", "sib", "sm"
                 if k != "sm":
                     mm = ress[seed][i][k]["marginals"]
                     mm[S,0, 1] = -1 #removing S from sorting
-                    marginals[k].append(common_utils.sort_by_inf(mm, 0))
+                    marginals[k].append(sort_I(mm, 0))
                     pos_sources[k].append(np.argwhere(marginals[k][-1][:,1]==source)[0][0])
                 else:
                     marginals[k].append({})
@@ -102,7 +101,8 @@ def plot_patient_zero_roc(plt,
                           range_=(0,1),
                           norm=1,
                           colors=None,
-                         rnd=False):
+                         rnd=False,
+                         figargs=None):
     if colors == None:
         colors=plt.get_cmap("Greens")
     num_inst=len(pos_sources["regressive"])
@@ -118,6 +118,8 @@ def plot_patient_zero_roc(plt,
 
     x = edge
     cl=0
+    if figargs is not None:
+        fig = plt.figure(**figargs)
     if rnd: plt.plot(x, y_rnd, "--", label=f"random -- auc: {auc(x, y_rnd):.3f}", color="black")
     plt.plot(x, y_rnd_I, "--", label=f"random (only I) -- auc: {auc(x, y_rnd_I):.3f}", color="black")
     plt.plot(x, y_sib, "-.", label=f"sib -- auc: {auc(x, y_sib):.3f}", linewidth="2")
@@ -128,8 +130,9 @@ def plot_patient_zero_roc(plt,
         pos_source_sm=[pos_sources["sm"][ii][nsim][alpha] for ii in range(len(pos_sources["sm"]))]
         s_sm,edge = np.histogram(np.array(pos_source_sm)/norm, bins=bins, range=range_)
         y_sm = np.insert(np.cumsum(s_sm)/num_inst,0,0)
+        nsim_pr = pretty_print_n(nsim)
         plt.plot(x, y_sm, ":",
-                 label=f"sm - {args.a_min+alpha*args.a_step:.2f} -- auc {auc(x, y_sm):.3f} -- sims:{nsim:.0e}", 
+                 label=f"sm - {args.a_min+alpha*args.a_step:.2f} -- auc {auc(x, y_sm):.3f} -- sims:{nsim_pr}", 
                  color=colors(np.clip(i/len(nsims), 0.3, 0.9)), lw=2)
     #except:
     #    pass

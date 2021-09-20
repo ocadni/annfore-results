@@ -10,12 +10,19 @@ PICKLE_PROT_VERSION = 4
 
 #TODO: add global names of files with keywords
 
-def save_json(path, obj):
+def save_json(path, obj, convert=False,json_args=None):
     """
     Save object as json
     """
-    with open(path, "wt") as fi:
-        json.dump(obj,fi)
+    flags=dict()
+    if json_args is not None:
+        flags.update(json_args)
+    if convert:
+        obj2 = convert_dtypes_py(obj)
+    else:
+        obj2 = obj
+    with open(path, "w") as fi:
+            json.dump(obj2,fi, **flags)
 
 def load_json(path):
     """
@@ -24,12 +31,17 @@ def load_json(path):
     with open(path) as f:
         return json.load(f)
 
-def save_json_gzip(path, obj):
+def save_json_gzip(path, obj, convert=False):
     """
     Save object as json, with gzip compression
     """
+    flags=dict()
+    if convert:
+        obj2 = convert_dtypes_py(obj)
+    else:
+        obj2 = obj
     with gzip.open(path, "wt") as fi:
-        json.dump(obj,fi)
+            json.dump(obj2,fi, **flags)
 
 def load_json_gzip(path):
     """
