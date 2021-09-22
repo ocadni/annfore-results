@@ -62,7 +62,7 @@ EXTRA_FLAGS=" --init_name_file $init_name --path_dir $path_dir --sparse_obs_last
 SPARSE_OBS="--sparse_obs --sparse_rnd_tests $n_test_rnd --pr_sympt $pr_sympt --delay_test_p $delay_test_p"
 TRAINING="--iter_marginals $iter_marginals --p_source $p_source --num_samples $num_samples --device $device --n_beta_steps $num_betas"
 #--p_rec_t0 $p_rec_t0 
-EXPER="--p_sus 0.7 --p_fin_bal --t_obs $t_limit --n_hidden_layers 3 --lin_net_pow 1"
+EXPER="--p_sus 0.7 --p_fin_bal --t_obs $t_limit --n_hidden_layers 4 --lin_net_pow 2"
 
 num_conf=1
 st_conf=0

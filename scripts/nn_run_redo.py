@@ -124,7 +124,7 @@ if __name__ == "__main__":
     elif args.lay_deep_eq:
         func_layers = [1, 1]
     elif args.lay_deep_sc:
-        func_layers = [1/2, 1/2, 1/3, 1/3]
+        func_layers = [2/3, 1/3, 2/3, 1/3]
     elif args.lay_less_deep:
         func_layers = [1/2, 1/2, 1]
         #raise NotImplementedError
