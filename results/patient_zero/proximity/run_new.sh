@@ -14,11 +14,13 @@ scale=2
 #small_lambda_limit=0
 start_conf=0
 num_conf=1
+
+
 #saving path
-path_dir="../patient_zero/proximity/data"
+path_dir="$(pwd)/data/ann"
 
 #python bin
-python="python3"
+python="python3 -u"
 
 # nn parameters
 p_source=1e-5
@@ -38,28 +40,38 @@ a_step=0.01
 nsims="1_000_000 10_000_000 100_000_000"
 #nsims="1_000"
 
+GEN_EPI="--type_graph $type_graph -T $t_limit -N $N -d $d --lambda $lambda --mu $mu "
+CONFS=" --num_conf $num_conf --start_conf $start_conf"
+EXTRA_GEN=" -scale $scale"
 
-cd ../../script
+NN_TRAIN="--n_beta_steps $n_beta_steps --device $device --iter_marginals $iter_marginals --num_threads $num_threads --num_samples $num_samples"
 
+SCRIPTFOLD="../../../scripts"
+mkdir -p $path_dir
+cd ../../../scripts/
 
-
+<<REMOVE
 for seed in {0..99}
 do
     
-    #$python ./sib_run_new.py --type_graph $type_graph -T $t_limit -N $N -d $d -scale $scale --lambda $lambda --mu $mu --seed $seed --p_source $p_source --path_dir $path_dir"/sib" --num_conf $num_conf --start_conf $start_conf 2>&1 | tee $path_dir"/sib/sib_run_new_"$seed".log"
-    echo
+    #$python ./sib_run_new.py $GEN_EPI $CONFS $EXTRA_GEN --seed $seed --p_source $p_source --path_dir $path_dir"/sib"  2>&1 | tee $path_dir"/sib/sib_run_new_"$seed".log"
+    echo ""
 done
+REMOVE
 
-for seed in {0..99}
+for seed in 1 #{0..99}
 do
-    #$python ./nn_run_redo.py --type_graph $type_graph -T $t_limit -N $N -d $d -scale $scale --lambda $lambda --mu $mu --seed $seed --p_source $p_source --path_dir $path_dir"/ann" --n_beta_steps $n_beta_steps --num_conf $num_conf --device $device --iter_marginals $iter_marginals --start_conf $start_conf --num_threads $num_threads --num_samples $num_samples 
+    $python ./nn_run_redo.py $GEN_EPI $CONFS $EXTRA_GEN --seed $seed --p_source $p_source --path_dir $path_dir $NN_TRAIN  --all_graph_neighs --n_hidden_layers 3 --lin_net_pow 1 # --lay_less_deep
     #2>&1 > $path_dir"/ann/ann_run_new_"$seed".log" | tee -a $path_dir"/sm/softmargin_run_multi_"$seed".log" &
-    echo
+    echo ""
+    #
 done
+<<DONE
 
 for seed in {90..99}
 do
-    echo $seed
-    $python ./softmargin_run_multi.py --type_graph $type_graph -T $t_limit -N $N -d $d --lambda $lambda --mu $mu -scale $scale --seed $seed --path_dir $path_dir"/sm" --num_conf $num_conf --start_conf $start_conf --ncores $ncores --nsims_probs $nsims  --a_min $a_min --a_max $a_max --a_step $a_step --overwrite 2>&1 | tee $path_dir"/sm/softmargin_run_multi_"$seed".log"
+    #echo $seed
+    #$python ./softmargin_run_multi.py $GEN_EPI $CONFS $EXTRA_GEN --seed $seed --path_dir $path_dir"/sm" --ncores $ncores --nsims_probs $nsims  --a_min $a_min --a_max $a_max --a_step $a_step --overwrite 2>&1 | tee $path_dir"/sm/softmargin_run_multi_"$seed".log"
 done
 
+DONE

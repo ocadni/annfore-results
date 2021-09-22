@@ -110,9 +110,6 @@ if __name__ == "__main__":
         raise ValueError(f"Init method for the weights {args.init} is invalid")
     
     NEXT_NEAR_NEIGH = True if not args.only_neigh else False
-    if args.all_graph_neighs:
-        ### we have to set the whole graph as neighbors of each node
-        NEXT_NEAR_NEIGH = 10
     
     func_layers =["none"]*args.n_hidden_layers
     if (args.n_hidden_layers != -1) and (
@@ -187,11 +184,17 @@ if __name__ == "__main__":
         p_rec_t0 = args.p_rec_t0
 
     nfeat = int(max(contacts[:, 0]) + 3)
-  
-    if not args.MF:
+    if args.all_graph_neighs and args.MF:
+        raise ValueError("Cannot put `all_graph_neighs` and `MF` together!")
+
+    if args.all_graph_neighs:
+        neighs = [range(0,k) if k != 0 else [] for k in range(N)]
+    elif not args.MF:
         neighs = find_neighs(contacts,N=N,only_minor=True, next_near_neigh=NEXT_NEAR_NEIGH)
     else:
         neighs = [[] for n in range(N)]
+
+    #print(neighs)
 
 ## ************ RUN INFERENCE ALGORITHMS ************
 
