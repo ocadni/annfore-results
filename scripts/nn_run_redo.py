@@ -133,6 +133,7 @@ if __name__ == "__main__":
     else:
         func_layers = [-2]*args.n_hidden_layers
 
+    print("Func layers:", func_layers)
 
     opt_algo = args.opt_algo
 
