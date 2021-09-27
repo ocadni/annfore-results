@@ -2,6 +2,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from .io_utils import load_json
+
 #create dictorary containing data
 def get_def_res(Ns, num_confs, seeds):
     ress = {}
@@ -102,6 +104,26 @@ def read_margs_inst(fold, inst, prefix="", name_margs="margs", range_confs=(0,1)
         d = np.load(path / nam_f)
         margs.append(d["marginals"])
         d.close()
+    return margs
+
+def read_params_inst(fold, inst, prefix="", name_pars="args", range_confs=(0,1),algo=None, outprint=True):
+    """
+    Read marginals with instance naming
+    """
+    name = f"{prefix}"+ str(inst)
+    
+    margs = []
+    path = Path(fold)
+    if outprint:
+        print(path.resolve().as_posix())
+
+    load_range = _make_range_confs(range_confs)
+
+    if outprint: print(load_range)
+    for i in load_range:
+        nam_f = name + f"_{i}_{name_pars}.json"
+        d = load_json(path / nam_f)
+        margs.append(d)
     return margs
 
 
