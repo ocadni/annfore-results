@@ -109,11 +109,10 @@ class SoftMarginSaver(ResultsSaver):
         for name in data.files:
             try:
                 idx = int(name.split("_")[-1])
-            except ValueError as err:
-                if name == "a_params":
-                    continue
-                else:
-                    raise IndexError from err
+            except ValueError:
+                if name != "a_params":
+                    print("Skipping ",name)
+                continue
             inst_probs[idx] = data[name]
 
         a_pars = data["a_params"]
