@@ -123,7 +123,7 @@ def plot_patient_zero_roc(plt,
     if rnd: plt.plot(x, y_rnd, "--", label=f"random -- auc: {auc(x, y_rnd):.3f}", color="black")
     plt.plot(x, y_rnd_I, "--", label=f"random (only I) -- auc: {auc(x, y_rnd_I):.3f}", color="black")
     plt.plot(x, y_sib, "-.", label=f"sib -- auc: {auc(x, y_sib):.3f}", linewidth="2")
-    plt.plot(x, y_nn, label=f"nn -- auc: {auc(x, y_nn):.3f}", linewidth="2")
+    plt.plot(x, y_nn, label=f"ANN -- auc: {auc(x, y_nn):.3f}", linewidth="2")
 
     #try:
     for i, nsim in enumerate(nsims):

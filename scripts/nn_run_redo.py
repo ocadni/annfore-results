@@ -2,10 +2,12 @@
 # coding: utf-8
 
 import sys, os
+import time
 from pathlib import Path
 import json
 import numpy as np
 import torch
+
 
 import epigen.generators as generat
 from epigen.epidemy_gen import make_stats_observ
@@ -27,6 +29,7 @@ from annfore.learn.l_utils import make_beta_sequence_three as make_beta_seq
 path_script = Path(sys.argv[0]).parent.absolute()
 sys.path.append(os.fspath(path_script.parent / "src"))
 from utils.script_utils import create_parser, create_data_
+from io_m.io_utils import save_json
 
 N_LAYS_DEFAULT = 3
 
@@ -330,9 +333,14 @@ if __name__ == "__main__":
         else:
             betas = np.arange(0.,1,step)
 
+        JSON_STAT_FILE=name_file_instance+"_args.json"
+        #with open(JSON_STAT_FILE,"w") as f:
+        #    json.dump(all_script_args,f, indent=1)
 
-        with open(name_file_instance+"_args.json","w") as f:
-            json.dump(all_script_args,f, indent=1)
+        all_script_args["timing"] = {}
+        all_script_args["timing"]["start"] = int(time.time())
+
+        save_json(JSON_STAT_FILE, all_script_args, indent=1)
         
         if not args.lr_param:
             if USE_LOSS_PSUS_BETA:
@@ -398,3 +406,8 @@ if __name__ == "__main__":
                     num_iter=iter_marginals)
         if args.save_net:
             torch.save(my_net, name_file_instance + ".pt" )
+
+        all_script_args["timing"]["end"] = int(time.time())
+
+
+        save_json(JSON_STAT_FILE, all_script_args, indent=1)

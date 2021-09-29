@@ -164,7 +164,7 @@ class SibResultsSaver(ResultsSaver):
         print(f)
         if not overwrite and f.exists():
             raise ValueError("File already exists. Rerun with overwrite=True to overwrite")
-        np.savez(f, **dict(zip(names, margs_list)), allow_pickle=False)
+        np.savez_compressed(f, **dict(zip(names, margs_list)))
     
     def save_margs_time(self, marginals, t_obs, overwrite=False):
         """

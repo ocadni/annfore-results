@@ -175,7 +175,7 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
     if np.any(np.isnan(simils_idx)):
         warn("Jaccards are nan")
     
-    #np.savez("simils_idx", similarity=simils_idx, allow_pickle=False)
+    #np.savez("simils_idx", similarity=simils_idx,)
     ### SINGLE ITER: simils is 1D array -> need to n_repeatbroadcast on zeroth dimension
     posteriors = []
     p_sources = p_sources[np.newaxis, :]

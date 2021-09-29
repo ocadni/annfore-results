@@ -10,13 +10,13 @@ PICKLE_PROT_VERSION = 4
 
 #TODO: add global names of files with keywords
 
-def save_json(path, obj, convert=False,json_args=None):
+def save_json(path, obj, convert=False,**kwargs):
     """
     Save object as json
     """
     flags=dict()
-    if json_args is not None:
-        flags.update(json_args)
+    if kwargs is not None:
+        flags.update(kwargs)
     if convert:
         obj2 = convert_dtypes_py(obj)
     else:

@@ -54,7 +54,7 @@ class SoftMarginSaver(ResultsSaver):
         if not overwrite and out_file.exists():
             raise ValueError("File already exists. Rerun with overwrite=True to overwrite")
 
-        np.savez_compressed(out_file, **out_dict, allow_pickle=False)
+        np.savez_compressed(out_file, **out_dict)
 
     @staticmethod
     def save_margs_(margs, out_file, n_insts, overwrite=False):
@@ -82,7 +82,7 @@ class SoftMarginSaver(ResultsSaver):
         if not overwrite and out_file.exists():
             raise ValueError("File already exists. Rerun with overwrite=True to overwrite")
 
-        np.savez_compressed(out_file, **out_dict, allow_pickle=False)
+        np.savez_compressed(out_file, **out_dict)
 
     @staticmethod
     def load_margs_(outfile_with_ext):
