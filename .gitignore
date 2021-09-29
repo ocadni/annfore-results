@@ -2,3 +2,5 @@
 __pycache__
 .ipynb_checkpoints
 *.tgz
+*_stats.npz
+*_trace.gz

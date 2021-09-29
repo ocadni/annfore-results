@@ -405,7 +405,7 @@ if __name__ == "__main__":
                     train_step = make_training_step_local,
                     num_iter=iter_marginals)
         if args.save_net:
-            torch.save(my_net, name_file_instance + ".pt" )
+            torch.save(my_net, name_file_instance + "_full_net.pt" )
 
         all_script_args["timing"]["end"] = int(time.time())
 
