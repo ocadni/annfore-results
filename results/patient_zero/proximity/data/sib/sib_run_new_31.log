@@ -1,0 +1,22 @@
+/home/indaco/git/nn_epidemics/src
+arguments:
+Namespace(N=100, d=10, device='cuda:1', gamma=0.0005, h=3, iter_learn=1, lambda_=0.03, lambda_init_param=0.1, lr_gamma=False, lr_param=0, maxit=1000, mu=0.02, mu_init_param=0.1, n_sources=1, ninf_max=None, ninf_min=1, num_conf=1, num_threads=-1, output_dir='results/', p_edge=1, p_source=1e-05, p_sus=0.5, path_contacts='i_bird_contacts.npz', path_dir='../patient_zero/proximity/data/ann', save_data_confs=False, scale=2.0, seed=31, small_lambda_limit=900, sp_obs_min_tinf=-2, sp_p_inf_symptoms=0.0, sp_p_test_delay=None, sparse_n_test_time=-1, sparse_obs=False, sparse_obs_last=False, start_conf=0, str_name_file='', t_limit=15, type_graph='proximity', unique_numinf=False, verbose_gen=True)
+nodes:100, edges:687
+number of contacts: 20610
+Lim infected: 1, Lim max infected: 101
+Num sources:  1
+ # conf 1,mean infected: 4.0, mean recover: 0.0, max num infected: 4
+0 (0.00%) epidemies refused
+
+S:96, I:4, R:0
+We have 1 epidemies
+Real source: 1
+single_iter:      0, err: 1.00000e+00 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202single_iter:      1, err: 6.07295e-01 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202single_iter:      2, err: 4.19964e-01 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202single_iter:      3, err: 8.76338e-01 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202single_iter:      4, err: 3.44663e-02 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202single_iter:      5, err: 0.00000e+00 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202
+single_iter:      0, err: 0.00000e+00 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202
+single_iter:      0, err: 0.00000e+00 -- iter_params: 0 -- lambda: 1.0 -- mu: 0.0202
+Converged: True
+S: 98.99999875517736, I: 1.0000012448226503, R: 0.0
+
+Sib convergence: 
+ 0    True
+dtype: bool
