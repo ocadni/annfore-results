@@ -7,6 +7,27 @@ from utils.common import pretty_print_n
 #import sys
 #sys.path.insert(0, '../')
 
+
+def fit_power_law(xdata, ydata):
+    """
+    Fit data series to power law
+    """
+    from scipy.optimize import curve_fit
+    dat = np.stack((xdata,ydata))
+    datlog = np.log(dat)
+    ## filter
+    isinf = np.abs(datlog) >= np.inf
+    naninf = np.isnan(datlog) | isinf
+    keepmask = (naninf.sum(0) == 0)
+    truedat = datlog[:,keepmask]
+    if truedat.shape[1] < datlog.shape[1]:
+        print(f"Warning: Using {truedat.shape[1]} of {datlog.shape[1]} points")
+    ## do fit
+    lin_f = lambda x,m,c: x*m+c
+    pars,cov = curve_fit(lin_f, truedat[0], truedat[1])
+    co1 = np.exp(pars[1])
+    return pars[0],co1,np.sqrt(cov[0,0]),co1*np.sqrt(cov[1,1])
+
 def sources_finder(ress, data_, num_conf, nsims, keys=["regressive", "sib", "sm"], ):
     marginals = {}
     Is = []   
