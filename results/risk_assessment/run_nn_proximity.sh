@@ -31,7 +31,7 @@ nsrc=1
 #gamma=1e-3
 #path_contacts="../patient_zero/work/work_13_contacts.npz"
 #small_lambda_limit=0
-path_dir="$(pwd)/ann/good_new/${type_graph}_${nsrc}src"
+path_dir="$(pwd)/ann/${type_graph}_${nsrc}src/lastobs/"
 
 # nn parameters
 p_source=1e-2
@@ -39,7 +39,7 @@ p_source=1e-2
 #p_rec_t0=1e-7
 
 iter_marginals=100
-device="cuda:1"
+device="cuda"
 num_samples=10000
 num_betas=10000
 
@@ -53,8 +53,8 @@ pr_sympt=0.5
 n_test_rnd=1
 delay_test_p="0. 0.2 0.5 0.6"
 
-#init_name="10kst10ks_${n_test_rnd}rnd_4lpow2_"
-init_name="10kst10ks_lastobs_ex_psus07_psrc2_"
+#init_name="10kst10ks_${n_test_rnd}rnd_"
+init_name="10kst10ks_3lpow1_psus07_psrc2_"
 
 GEN_GRAPH="--type_graph $type_graph -N $N -d $d -height $height -T $t_limit --lambda $lambda --mu $mu -p_edge $p_edge -scale $scale"
 
@@ -62,13 +62,13 @@ EXTRA_FLAGS=" --init_name_file $init_name --path_dir $path_dir --sparse_obs_last
 SPARSE_OBS="--sparse_obs --sparse_rnd_tests $n_test_rnd --pr_sympt $pr_sympt --delay_test_p $delay_test_p"
 TRAINING="--iter_marginals $iter_marginals --p_source $p_source --num_samples $num_samples --device $device --n_beta_steps $num_betas"
 #--p_rec_t0 $p_rec_t0 
-EXPER="--p_sus 0.7 --p_fin_bal --t_obs $t_limit --n_hidden_layers 4 --lin_net_pow 2"
+EXPER="--p_sus 0.7 --p_fin_bal --t_obs $t_limit --n_hidden_layers 3 --lin_net_pow 1"
 
 num_conf=1
 st_conf=0
 
 mkdir -p $path_dir
-for seed in $(seq 18 19)
+for seed in $(seq 0 1)
 do
     echo $seed
     n_conf=$(( $st_conf+$num_conf ))
