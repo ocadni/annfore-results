@@ -79,10 +79,13 @@ st_conf=0
 
 echo "NUM SAMPLES $num_samples"
 
+seed_st=10
+nseed=5
+seed_end=$(( $seed_st + $nseed - 1 ))
 
 
 mkdir -p $path_dir
-for seed in $(seq 10 15)
+for seed in $(seq $seed_st $seed_end)
 do
     #if [ $seed -eq 45 ]; then
     #    continue
