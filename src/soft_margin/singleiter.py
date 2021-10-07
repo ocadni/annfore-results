@@ -162,7 +162,7 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
     ## sort the requested number of sims
     num_sims_all=np.sort(num_sims_all).astype(int)
     ## biggest number of sims
-    n_epi_per_a = num_sims_all[-1]
+    n_epi_per_a = np.max(num_sims_all)#[-1]
     
     myprint("Extracting sources...")
     sources = fun_sample(p_sources, n_epi_per_a)
@@ -177,8 +177,9 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
     
     #np.savez("simils_idx", similarity=simils_idx,)
     ### SINGLE ITER: simils is 1D array -> need to n_repeatbroadcast on zeroth dimension
-    posteriors = []
+    posteriors = {}
     p_sources = p_sources[np.newaxis, :]
+    #res_out = {}
     for nsim in num_sims_all:
         myprint(f"Computing likelis and poster for {pretty_print_n(nsim)}")
         msimidx = simils_idx[np.newaxis, :nsim]
@@ -192,9 +193,9 @@ def run_softm_manysims(a_pars, p_sources, num_sims_all, contacts, inst, last_obs
         posters = normalize(likelis*p_sources, 1)
         if np.any(np.isnan(posters)):
             warn("Posteriors are nan")
-        posteriors.append(posters)
+        posteriors[nsim]= posters
     if overw_log and prev_message is None:
         print("")
         print("Done")
 
-    return dict(zip(num_sims_all, posteriors))
+    return posteriors

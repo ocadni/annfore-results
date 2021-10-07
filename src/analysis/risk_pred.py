@@ -149,7 +149,7 @@ def calc_aucs_risks(risks_arr, fin_conf, obs_all_df, instance,
 def get_probs_inf(arr_data, fin_conf, obs_all_df, instance, what,
             st_exclude=(1,2), st_find=(1,), t_obs=-1):
     """
-    Calculate ROCs on the marginals
+    Calculate accuracy on the marginals
     excluding those with observed state in `st_exclude`,
     finding the nodes with state in `st_find` at time `t_obs`
     """
@@ -158,15 +158,18 @@ def get_probs_inf(arr_data, fin_conf, obs_all_df, instance, what,
         raise ValueError("Only one state possible")
     n_inst = min(len(fin_conf), len(arr_data))
     for i, conf_fin in enumerate(fin_conf[:n_inst]):
+        ## i is the epidemic index
         nidx = get_obs_idx(obs_all_df[i], states=st_exclude)
-        sel_idx = set(range(instance.n)).difference(nidx)
-        #errs = get_err_rocs_risks(risks_arr[i], sel_idx, conf_fin, state=st_find[0])
-        true_states = conf_fin[list(sel_idx)]
-        valid = (true_states == st_find[0])
+        sel_idx = list(
+            set(range(instance.n)).difference(nidx)
+        )
+        true_states = conf_fin[sel_idx]
+        valid = sum(true_states == s for s in st_find)
+        valid = np.array(valid,dtype=np.bool_)
         if what == ResType.risks:
-            prs = arr_data[i][list(sel_idx)]
+            prs = arr_data[i][sel_idx]
         elif what == ResType.margs:
-            prs = arr_data[i][list(sel_idx),t_obs]
+            prs = arr_data[i][sel_idx,t_obs]
             prs = prs[:,list(st_find)]
             if len(prs.shape) > 1:
                 prs = prs.sum(1)
@@ -181,3 +184,35 @@ def count_found(risk_i):
     g.view("f8,f8").sort(axis=0, order="f0")
 
     return g[::-1].T[1].cumsum()
+
+def calc_rocs_aucs(probs,
+        npoints=101,
+        ):
+    """
+    Compute ROCs and AUCs, and
+    save rocs by linear interpolation
+    (returning statistics)
+    """
+    aucs_exp = []
+    rocs_exp=[]
+    
+    xinter = np.linspace(0,1,npoints)
+    for inst_seed in probs:
+        for d in inst_seed:
+            trues=d[1]
+            ps = d[0]
+            fpr,tpr,_ = roc_curve(trues,ps)
+            mauc = auc(fpr,tpr)
+            if np.isnan(mauc):
+                #print("Skipping for NaN")
+                ## skip interpolation
+                continue
+            aucs_exp.append(mauc)
+            rocs_exp.append(np.insert(
+                np.interp(xinter, fpr, tpr), 0 ,0.))
+    rocs_exp = np.array(rocs_exp)
+    return np.array(aucs_exp), rocs_exp
+    #np.stack(
+    #    (rocs_exp.mean(axis=0),rocs_exp.std(axis=0))), np.nanquantile(
+    #        rocs_exp, quantiles, axis=0
+    #ù    )
