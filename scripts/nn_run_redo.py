@@ -62,6 +62,7 @@ def add_arg_parser(parser):
     parser.add_argument('--num_end_iter', type=int, default=100, dest="num_end_iter", help="number of itareations at the end of annealing process ")
     parser.add_argument('--lr_param',  action="store_true", help="learning params of the propagation model [lambda, mu]")
     parser.add_argument('--lr_gamma',  action="store_true", help="learning rate of infection instead of probability of the propagation model [gamma]")
+    parser.add_argument('--beta_start_learn',  type=float, default=0.9, dest="beta_start_learn", help="value of beta where the learning of epidemic params starts")
     parser.add_argument('--save_net', action="store_true", help="save neural net")
     parser.add_argument('--only_neigh', action="store_true", help="consider only nearest neighs")
     parser.add_argument('--MF', action="store_true", help="consider no neighs [MeanField version]")
@@ -392,7 +393,8 @@ if __name__ == "__main__":
                         num_samples=num_samples,
                         train_step = make_training_step_local,
                         learn_params=learn_params_fnc,
-                        betas=betas, save_every=200)
+                        betas=betas, save_every=200,
+                        beta_start_learn=args.beta_start_learn)
 
         print("computing marginals")
         iter_marginals = args.iter_marginals
