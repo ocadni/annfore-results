@@ -41,7 +41,7 @@ p_source=1e-4
 
 #saving path
 path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/rrg/data/"
-init_name_file="eq_05"
+init_name_file="eq_05_"
 #python bin
 python="python3"
 python="/home/ibiazzo/miniconda3/bin/python3"
