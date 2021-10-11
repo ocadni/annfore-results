@@ -1,37 +1,52 @@
 #!/bin/bash
 
+#SBATCH --time=5:10:00 
+#SBATCH --ntasks=1
+#SBATCH --partition=cuda 
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=work_params 
+#SBATCH --mem=3GB
+#SBATCH --mail-type=ALL
+#SBATCH --output=/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/run_new.out
+#SBATCH --err=/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/run_new.err
+
+
 #interaction graph
-type_graph="i_bird"
+type_graph="data_deltas"
 N=95
 d=10
 height=3
+
 #epidemic parameters
+
 lambda=0.5
 mu=0.02
 t_limit=12
 scale=2
 gamma=1e-3
-path_contacts="../results/parameters/work/work_13_contacts.npz"
-#small_lambda_limit=0
+path_contacts="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/work_13_contacts.npz"
+small_lambda_limit=0
 
 #configurations
 start_conf=0
 num_conf=1
 ninf_min=5
+seed=0
 
 #learning params
 lambda_init_param=0.01
 mu_init_param=0.01
-small_lambda_limit=0
 
 # bias source learning rae
 p_source=1e-4
 
 #saving path
-path_dir="../results/parameters/work/data"
-init_name_file="lay_deep_eq"
+path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/data/"
+init_name_file="eq_05_"
 #python bin
-python="python3"
+#python="python3"
+python="/home/ibiazzo/miniconda3/bin/python3"
+
 
 # sib paramters
 iter_learn=1
@@ -42,12 +57,12 @@ maxit=20
 lr=1e-3
 step=1e-4
 iter_marginals=100
-device="cuda:0"
+device="cuda"
 #device="cpu"
 num_samples=10000
 num_threads=1
 num_end_iter=100
-beta_start_learn=0.9
+beta_start_learn=0.5
 lin_net_pow=1
 
 GEN_EPI="--type_graph $type_graph -N $N -d $d -height $height -T $t_limit --lambda $lambda --mu $mu --gamma $gamma"
@@ -62,8 +77,8 @@ SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_
 
 cd ../../scripts
 
-for seed in {1..20}
-do
-    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
-    $python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
-done
+#for seed in {1..20}
+#do
+    #$python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
+$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+#done

@@ -1,5 +1,17 @@
 #!/bin/bash
 
+
+#SBATCH --time=5:10:00 
+#SBATCH --ntasks=1
+#SBATCH --partition=cuda 
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=rrg_params 
+#SBATCH --mem=3GB
+#SBATCH --mail-type=ALL
+#SBATCH --output=/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/rrg/run_new.out
+#SBATCH --err=/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/rrg/run_new.err
+
+
 #interaction graph
 type_graph="RRG"
 N=100
@@ -18,6 +30,7 @@ scale=2
 start_conf=0
 num_conf=1
 ninf_min=5
+seed=0
 
 #learning params
 lambda_init_param=0.1
@@ -27,10 +40,11 @@ mu_init_param=0.1
 p_source=1e-4
 
 #saving path
-path_dir="../results/parameters/rrg/data"
-init_name_file="lay_deep_eq_"
+path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/rrg/data/"
+init_name_file="eq_05"
 #python bin
 python="python3"
+python="/home/ibiazzo/miniconda3/bin/python3"
 
 # sib paramters
 iter_learn=500
@@ -41,12 +55,12 @@ maxit=50
 lr=1e-3
 step=1e-4
 iter_marginals=100
-device="cuda:1"
+device="cuda"
 #device="cpu"
 num_samples=10000
 num_threads=1
 num_end_iter=100
-beta_start_learn=0.9
+beta_start_learn=0.5
 lin_net_pow=1
 
 GEN_EPI="--type_graph $type_graph -N $N -d $d -height $height -T $t_limit --lambda $lambda --mu $mu"
@@ -61,8 +75,8 @@ SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_
 
 cd ../../scripts
 
-for seed in {1..20}
-do
-    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
-    $python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
-done
+#for seed in {1..20}
+#do
+    #$python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
+$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+#done
