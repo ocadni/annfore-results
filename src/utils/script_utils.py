@@ -85,6 +85,13 @@ def create_data_(args, give_instance=False, use_inst_name=False):
         "start_time":0,
         "shift_t":True,
     })
+    if "gamma1" and "gamma2" and "fraction_nodes1" in args:
+        data_gen.update({
+            "gamma1":args.gamma1,
+            "gamma2":args.gamma2,
+            "fraction_nodes1":args.fraction_nodes1
+        })
+
     path_dir = args.path_dir
     if args.path_dir == "not_setted":
         path_dir = type_graph

@@ -24,7 +24,8 @@ mu=0.02
 t_limit=12
 scale=2
 gamma=1e-3
-path_contacts="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/work_13_contacts.npz"
+#path_contacts="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/work_13_contacts.npz"
+path_contacts="../results/parameters/work/work_13_contacts.npz"
 small_lambda_limit=0
 
 #configurations
@@ -41,16 +42,16 @@ mu_init_param=0.01
 p_source=1e-4
 
 #saving path
-path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/work/data/"
+path_dir="../results/parameters/work/data/"
 init_name_file="eq_05_"
 #python bin
-#python="python3"
-python="/home/ibiazzo/miniconda3/bin/python3"
+python="python3"
+#python="/home/ibiazzo/miniconda3/bin/python3"
 
 
 # sib paramters
-iter_learn=1
-lr_param_sib=2e-6
+iter_learn=500
+lr_param_sib=3e-6
 maxit=20
 
 # nn parameters
@@ -73,12 +74,12 @@ ANN_LAYERS="--lay_deep_eq"
 #ANN_LAYERS="--lay_deep_sc"
 #ANN_LAYERS="--lin_net_pow $lin_net_pow"
 
-SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_param $mu_init_param --iter_learn $iter_learn --lr_param $lr_param_bp --maxit $maxit --lr_gamma --path_contacts $path_contacts --small_lambda_limit $small_lambda_limit"
+SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_param $mu_init_param --iter_learn $iter_learn --lr_param $lr_param_sib --maxit $maxit --lr_gamma --path_contacts $path_contacts --small_lambda_limit $small_lambda_limit"
 
 cd ../../scripts
 
-#for seed in {1..20}
-#do
-    #$python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
-$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
-#done
+for seed in {1..10}
+do
+    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
+    #$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+done

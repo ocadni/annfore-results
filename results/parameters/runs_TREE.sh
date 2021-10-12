@@ -39,11 +39,12 @@ mu_init_param=0
 p_source=1e-4
 
 #saving path
-path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/TREE/data/"
+#path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/TREE/data/"
+path_dir="../results/parameters/TREE/data/"
 init_name_file="eq_05_"
 #python bin
-#python="python3"
-python="/home/ibiazzo/miniconda3/bin/python3"
+python="python3"
+#python="/home/ibiazzo/miniconda3/bin/python3"
 # sib paramters
 iter_learn=1000
 lr_param=1e-4
@@ -67,4 +68,9 @@ ANN_LAYERS="--lay_deep_eq"
 SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_param $mu_init_param --iter_learn $iter_learn --lr_param $lr_param"
 
 cd ../../scripts
-$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+for seed in {1..10}
+do
+    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
+
+    #$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+done

@@ -75,7 +75,7 @@ SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_
 
 cd ../../scripts
 
-#for seed in {1..20}
+#for seed in {1..10}
 #do
     #$python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
 $python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 

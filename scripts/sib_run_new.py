@@ -162,7 +162,10 @@ if __name__ == "__main__":
             print(f"\nConverged: {conver[0]}")
 
             if args.lr_param > 0:
+                
                 lr_i = args.lr_param/100 if args.lr_gamma else args.lr_param
+                if ii/args.iter_learn > 0.8:
+                    lr_i /= 100
                 lr_r = args.lr_param
                 dfr=0
                 dfi=0

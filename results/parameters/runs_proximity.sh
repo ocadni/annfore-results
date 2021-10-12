@@ -38,12 +38,13 @@ mu_init_param=0.1
 p_source=1e-4
 
 #saving path
-path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/proximity/data/"
+#path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/proximity/data/"
+path_dir="../results/parameters/proximity/data/"
 init_name_file="eq_05"
 
 #python bin
-#python="python3"
-python="/home/ibiazzo/miniconda3/bin/python3"
+python="python3"
+#python="/home/ibiazzo/miniconda3/bin/python3"
 
 # sib paramters
 iter_learn=300
@@ -74,8 +75,8 @@ SIB_CONF="--p_source $p_source --lambda_init_param $lambda_init_param --mu_init_
 
 cd ../../scripts
 
-#for seed in {13..20}
-#do
-#    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
-$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
-#done
+for seed in {1..10}
+do
+    $python ./sib_run_new.py  $GEN_EPI $CONFS $SIB_CONF --seed $seed --path_dir $path_dir 
+    #$python ./nn_run_redo.py  $GEN_EPI $CONFS $ANN_CONF $ANN_LAYERS --seed $seed --path_dir $path_dir 
+done
