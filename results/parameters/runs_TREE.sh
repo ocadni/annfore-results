@@ -40,7 +40,7 @@ p_source=1e-4
 
 #saving path
 path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/TREE/data/"
-init_name_file="eq_"
+init_name_file="eq_05_"
 #python bin
 #python="python3"
 python="/home/ibiazzo/miniconda3/bin/python3"
@@ -57,8 +57,8 @@ device="cuda"
 num_samples=10000
 num_threads=1
 num_end_iter=100
-b
-ta_start_learn=0.5
+beta_start_learn=0.5
+lin_net_pow=1
 
 GEN_EPI="--type_graph $type_graph -N $N -d $d -height $height -T $t_limit --lambda $lambda --mu $mu"
 CONFS=" --num_conf $num_conf --start_conf $start_conf --ninf_min $ninf_min"
