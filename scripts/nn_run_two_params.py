@@ -345,15 +345,15 @@ if __name__ == "__main__":
         save_json(JSON_STAT_FILE, all_script_args, indent=1)
         
         betas = np.append(betas, [1]*args.num_end_iter)
-
+        lr_params = lr/10
         gamma1_param, gamma1_opt = opt_param_init(model, 
                                           param_init=args.gamma1_init_param, 
-                                          name="gamma1", dtype=dtype, device=device, lr=lr)
+                                          name="gamma1", dtype=dtype, device=device, lr=lr_params)
         
         model.create_deltas_tensor(data_["deltas"])
         gamma2_param, gamma2_opt = opt_param_init(model, 
                                               param_init=args.gamma2_init_param, 
-                                              name="gamma2", dtype=dtype, device=device, lr=lr)
+                                              name="gamma2", dtype=dtype, device=device, lr=lr_params)
         learn_params_fnc=learn_two_gamma
             
         params=[gamma1_param, gamma2_param]
