@@ -1,23 +1,0 @@
-/home/indaco/git/nn_epidemics/src/soft_margin/utils.py:183: UserWarning: Some sums are zero on dimension 1
-  warnings.warn("Some sums are zero on dimension {:d}".format(dim))
-/home/indaco/git/nn_epidemics/src
-arguments:
-Namespace(N=100, a_max=0.3, a_min=0.01, a_step=0.01, d=10, device='cuda:1', gamma=0.0005, h=3, lambda_=0.03, lambda_init_param=0.1, marginals=False, mu=0.02, mu_init_param=0.1, n_cores=20, n_iter=1, n_iter_margs=1, n_sims_margs=None, n_sims_probs=[1000000, 10000000, 100000000], n_sims_start=-3, n_sims_steps=1, n_sources=1, ninf_max=None, ninf_min=1, ninf_run=None, nrepeat=1, num_conf=1, output_dir='results/', overwrite=True, p_edge=1, path_contacts='i_bird_contacts.npz', path_dir='../patient_zero/proximity/data/sm', rep_start=0, save_data_confs=False, scale=2.0, seed=53, small_lambda_limit=900, softm_seed=None, sp_obs_min_tinf=-2, sp_p_inf_symptoms=0.0, sp_p_test_delay=None, sparse_n_test_time=-1, sparse_obs=False, sparse_obs_last=False, start_conf=0, str_name_file='', t_limit=15, type_graph='proximity', unique_numinf=False, verbose_gen=True)
-nodes:100, edges:767
-number of contacts: 23010
-Lim infected: 1, Lim max infected: 101
-Num sources:  1
-
-num_infected 1 < 1 (lim_infected)
- # conf 1,mean infected: 62.0, mean recover: 2.0, max num infected: 62
-1 (50.00%) epidemies refused
-
-S:38, I:60, R:2
-Set to use 20 cores
-#### NSIMS TO DO:  ['1M', '10M', '100M']
-Setup for proximity 100 d 10 complete
-#### NSIM [1000000, 10000000, 100000000] REP 0
-  Instance 0 - iter 0:                                      Instance 0 - iter 0: Extracting sources...  Instance 0 - iter 0: Running simulations  Instance 0 - iter 0: Computing likelis and poster for 1M  Instance 0 - iter 0: Computing likelis and poster for 10M  Instance 0 - iter 0: Computing likelis and poster for 100M../patient_zero/proximity/data/sm/proximity_n_100_d_10_tlim_15_lam_0.03_mu_0.02_s_53_pe_1_nc_1_softm_nsims_1000000_rep_0_probs.npz
-../patient_zero/proximity/data/sm/proximity_n_100_d_10_tlim_15_lam_0.03_mu_0.02_s_53_pe_1_nc_1_softm_nsims_10000000_rep_0_probs.npz
-../patient_zero/proximity/data/sm/proximity_n_100_d_10_tlim_15_lam_0.03_mu_0.02_s_53_pe_1_nc_1_softm_nsims_100000000_rep_0_probs.npz
-Time taken: 21 min, 13 secs
