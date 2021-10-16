@@ -49,7 +49,7 @@ p_source=1e-2
 p_sus=0.7
 
 
-SCRIPT="-u ../../results/script/sib_run_new.py"
+SCRIPT="-u ../../scripts/sib_run_new.py"
 
 #sparse observ
 pr_sympt=0.5
@@ -81,5 +81,5 @@ for seed in $(seq 0 100)
 do
     echo $seed
     n_conf=$(( $st_conf+$num_conf ))
-    python $SCRIPT $GEN_GRAPH --seed $seed $EXTRA_FLAGS $SPARSE_OBS $SIB_PARS --nthreads 20 #$EXTRA_GEN
+    python $SCRIPT $GEN_GRAPH --seed $seed $EXTRA_FLAGS $SPARSE_OBS $SIB_PARS --nthreads 50 #$EXTRA_GEN
 done
