@@ -344,7 +344,7 @@ if __name__ == "__main__":
         save_json(JSON_STAT_FILE, all_script_args, indent=1)
         
         betas = np.append(betas, [1]*args.num_end_iter)
-        lr_params = lr/10
+        lr_params = lr/50
         gamma1_param, gamma1_opt = opt_param_init(model, 
                                           param_init=args.gamma1_init_param, 
                                           name="gamma1", dtype=dtype, device=device, lr=lr_params)
