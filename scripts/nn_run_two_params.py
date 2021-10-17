@@ -103,7 +103,6 @@ if __name__ == "__main__":
     p_source = args.p_source
     p_mc = args.p_mc
     p_obs = args.p_obs
-    rnd_gen = np.random.RandomState(seed=args.seed)
     #p_sus_sparse_obs = 1.-1/((args.t_limit+1)*(args.t_limit+1))
     USE_PSUS_FINALT = args.sparse_obs
     USE_LOSS_PSUS_BETA = args.sparse_obs
@@ -362,6 +361,7 @@ if __name__ == "__main__":
         model.extra_params["max_Z"]=-100000000
         
         #splitting node
+        rnd_gen = np.random.RandomState(seed=(args.seed+1))
         nodes_1 = data_["nodes_1"]
         if args.rand_split_nodes:
             print("**** SPLIT RANDOM NODE IN INFERENCE ****")
