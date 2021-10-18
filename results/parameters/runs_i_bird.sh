@@ -45,7 +45,7 @@ p_source=1e-4
 #saving path
 #path_dir="../results/parameters/i_bird/data/"
 path_dir="/home/ibiazzo/git/ann_results/nnepi-results/results/parameters/i_bird/data/"
-init_name_file="eq_05_lr"
+init_name_file="eq_05_lr_"
 #python bin
 #python="python3"
 python="/home/ibiazzo/miniconda3/bin/python3"
