@@ -4,3 +4,4 @@ __pycache__
 *.tgz
 *_stats.npz
 *_trace.gz
+*.DS_Store
