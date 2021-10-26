@@ -81,6 +81,8 @@ def add_arg_parser(parser):
 
 
     parser.add_argument("--exp_like_beta",action="store_true", help="beta annealing with more exponential like sequence of beta")
+
+    parser.add_argument("--layer_norm",action="store_true", help="Apply layer normalization to each linear layer")
     return parser
 
 
@@ -253,7 +255,8 @@ if __name__ == "__main__":
                     device = device,
                     in_func=torch.nn.LeakyReLU(),
                     bias=BIAS_NETS,
-                    lin_scale_power=args.lin_net_pow
+                    lin_scale_power=args.lin_net_pow,
+                    layer_norm=args.layer_norm
                     )
 
         my_net.init(method=INIT_METHOD)
@@ -273,6 +276,7 @@ if __name__ == "__main__":
             extra_saving_args["p_sus_max"] = p_sus_max
             extra_saving_args["p_sus_final"] = p_sus_sparse_obs
         """
+        print(str(my_net.sublayers))
 
         extra_saving_args["num_parameters"] = my_net.nparams
         print("Num parameters: ", my_net.nparams)
