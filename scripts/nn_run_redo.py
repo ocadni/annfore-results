@@ -276,7 +276,7 @@ if __name__ == "__main__":
             extra_saving_args["p_sus_max"] = p_sus_max
             extra_saving_args["p_sus_final"] = p_sus_sparse_obs
         """
-        print(str(my_net.sublayers))
+        print("Net using layer normalization: ", my_net.layer_norm)
 
         extra_saving_args["num_parameters"] = my_net.nparams
         print("Num parameters: ", my_net.nparams)
