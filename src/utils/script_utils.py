@@ -6,7 +6,7 @@ import numpy as np
 
 from epigen import epidemy_gen_new, EpInstance
 import epigen.generators as generat
-from epigen import gen_observ
+from epigen import observ_gen
 
 
 def create_parser():
@@ -131,16 +131,16 @@ def create_data_(args, give_instance=False, use_inst_name=False):
             p_test_delay = np.array(p_test_delay)/sum(p_test_delay)
         ## get full epidemies
         if args.sparse_obs_last:
-            obs_df, obs_json = gen_observ.make_sparse_obs_last_t(data_,
+            obs_df, obs_json = observ_gen.make_sparse_obs_last_t(data_,
                 t_limit, pr_sympt=pr_sympt, seed=seed, verbose=args.verbose_gen,
                 )
         else:
-            obs_df, obs_json = gen_observ.make_sparse_obs_default(data_,
+            obs_df, obs_json = observ_gen.make_sparse_obs_default(data_,
                     t_limit, ntests=ntests, pr_sympt=pr_sympt,
                     p_test_delay=p_test_delay, seed=seed, verbose=args.verbose_gen,
                     min_t_inf=args.sp_obs_min_tinf)
         for df in obs_df:
-            df["obs_st"] = tuple(gen_observ.convert_obs_list_numeric(df["obs"]))
+            df["obs_st"] = tuple(observ_gen.convert_obs_list_numeric(df["obs"]))
         data_["observ_df"] = obs_df
         data_["observ_dict"] = obs_json
         #print(obs_df[0])

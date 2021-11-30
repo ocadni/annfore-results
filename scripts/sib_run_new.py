@@ -131,7 +131,7 @@ if __name__ == "__main__":
             print("***** CHECK if sib is in right branch ******")
             params_sib = sib.Params(prob_r = sib.Exponential(mu=mu_rate), 
                         prob_i = sib.ConstantRate(gamma=lambda_),
-                        pseed=prob_seed, 
+                        pseed=prob_seed,
                         psus= p_sus)
             contacts = data_["deltas"]
             contacts = [(int(i),int(j),int(t),l) for t,i,j,l in contacts]

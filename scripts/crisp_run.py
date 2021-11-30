@@ -128,6 +128,9 @@ if __name__ == "__main__":
             json.dump(all_args,mfile, indent=1)
         
         margs = stats / stats.sum(-1)[...,np.newaxis]
+        init_c = margs[:,0].sum(0)
+        
+        print("Init state: "," ".join(f"{cc}:{vv:.3f}" for cc,vv in zip(["S","I","R"],init_c)))
         
 
         np.savez_compressed(name_file_instance+"_margs.npz", marginals=margs)

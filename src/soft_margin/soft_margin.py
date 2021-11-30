@@ -10,7 +10,7 @@ import numpy as np
 from numba import njit, prange
 import numba as nb
 
-from epigen import propagate
+from epigen.propagate import make_epidemy_inplace
 import soft_margin.utils as softm_utils
 import io_m.libsaving as libsaving
 import io_m.io_utils as io_utils
@@ -347,7 +347,7 @@ def make_epidemy_nb(src, n, mu, contacts):
     epidemy = np.empty(n)
     delays = np.empty(n)
     fathers = np.empty(n)
-    epid_res = propagate.make_epidemy_inplace(src, n, mu, contacts,
+    epid_res = make_epidemy_inplace(src, n, mu, contacts,
                                               epidemy, delays, fathers)
     return epid_res, delays
 
