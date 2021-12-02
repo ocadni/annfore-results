@@ -11,8 +11,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from epigen.epidemy_gen import epidemy_gen_new
-
 path_script = Path(sys.argv[0]).parent.absolute()
 sys.path.append(os.fspath(path_script.parent/"src"))
 
@@ -75,11 +73,9 @@ if __name__ == "__main__":
 
     mat_obs = crisp_sir.make_mat_obs(args.p_wrong_obs)
 
-    if args.seed_mc is not None:
-        seed = args.seed_mc
-        print("Setting seed ", seed)
-        crisp_sir.set_numba_seed(seed)
-        np.random.seed(seed)
+
+    #crisp_sir.set_numba_seed(seed)
+    #np.random.seed(seed)
     
     params_crisp = crisp_sir.make_params(N, T, pautoinf=args.p_autoinf, 
             p_source=args.p_source, lamda=INSTANCE.lambda_, mu=INSTANCE.mu, p_sus=args.p_sus)
@@ -111,13 +107,22 @@ if __name__ == "__main__":
         obs_list.sort(key=lambda tup: tup[0])
 
         t_v = time.time()
+        if args.seed_mc is not None:
+            seed_mc = args.seed_mc
+            print("Setting seed ", seed_mc)
+        else:
+            seed_mc = None
+    
         ecc1, stats, ecc = crisp_sir.run_crisp(params_crisp, observ=obs_list,
             contacts=contacts,
             num_samples=args.n_step,
             mat_obs=mat_obs,
-            burn_in=args.n_burnin
+            burn_in=args.n_burnin,
+            seed=seed_mc,
+            start_inf=True,
             )
         taken_t = int(time.time() -  t_v)
+        print("Max num source", stats[:,0,1].max())
        
         print("Done, saving marginals and script arguments...")
 
@@ -130,7 +135,7 @@ if __name__ == "__main__":
         margs = stats / stats.sum(-1)[...,np.newaxis]
         init_c = margs[:,0].sum(0)
         
-        print("Init state: "," ".join(f"{cc}:{vv:.3f}" for cc,vv in zip(["S","I","R"],init_c)))
+        print("Init state: "," ".join(f"{cc}:{vv:.3f}" for cc,vv in zip(["S","I","R"], init_c)))
         
 
         np.savez_compressed(name_file_instance+"_margs.npz", marginals=margs)
