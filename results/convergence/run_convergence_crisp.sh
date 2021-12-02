@@ -29,24 +29,31 @@ python="python3"
 
 num_proc=10
 
+name="test_"
+
 CRISP_PARS="--p_autoinf $p_autoinf  --p_wrong_obs $p_wrong_obs --n_burnin $n_burnin --p_source $p_source"
 
 SCRIPT="-u ../../scripts/crisp_run.py"
-mkdir -p $path_dir
 N_STEPS_MC="20000 50000 100000 200000 500000"
-#N_STEPS_MC="100 200"
-PARALL="--n_steps_list $N_STEPS_MC --n_proc $num_proc --rep_range 0 10" #  --n_steps $n_steps
-#n_steps=10000
+
+PARALL="--n_steps_list $N_STEPS_MC --n_proc $num_proc --rep_range 0 10" #  --
+
+GEN=" -d $d -height $height -T $t_limit  --mu $mu --seed $seed --path_dir $path_dir " 
+
+mkdir -p $path_dir
+
+
+
 for seed in 0 1 2
 do
-    for lambda in 0.1 0.2 0.3 0.4 0.5 0.6
+    for lam in 0.1 0.2 0.3 0.4 0.5 0.6
     do
-        echo "LAMBDA: $lambda"
+        echo "LAMBDA: $lam"
         seed_mc=$((seed*59+3))
-        name="nsteps_${n_steps}_"
+        
         echo "$name"
          
-        $python $SCRIPT -d $d -height $height -T $t_limit --lambda $lambda --mu $mu --seed $seed --path_dir $path_dir --num_conf $num_conf  --init_name_file $name $CRISP_PARS $PARALL --seed_mc $seed_mc 
+        $python $SCRIPT --num_conf $num_conf --lambda $lam --init_name_file $name $CRISP_PARS $PARALL $GEN --seed_mc $seed_mc 
 
         
     done
