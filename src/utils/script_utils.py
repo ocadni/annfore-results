@@ -162,7 +162,7 @@ def create_data_(args, give_instance=False, use_inst_name=False):
 
     name_file = path_dir + "/" + args.str_name_file
     if use_inst_name:
-        name_file += str(inst)
+        name_file = get_name_file_instance(args, args.str_name_file, inst)
     else:
         name_file += f"N_{N}_d_{d}_h_{h}_T_{t_limit}_lam_{lambda_}_mu_{mu}_p_edge_{p_edge}"
         name_file += f"_s_{seed}"
@@ -172,3 +172,17 @@ def create_data_(args, give_instance=False, use_inst_name=False):
         return data_, name_file, inst
     else:
         return data_, name_file
+
+
+def get_name_file_instance(args, str_name_f, instance):
+    path_dir = args.path_dir
+    if args.path_dir == "not_setted":
+        path_dir = args.type_graph
+    path_fold = Path(path_dir)
+    return str(path_fold / str_name_f) + str(instance)
+
+def get_base_name_file(args):
+    """
+    helper function
+    """
+    return args.str_name_file
