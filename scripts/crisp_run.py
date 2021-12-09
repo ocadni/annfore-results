@@ -195,20 +195,22 @@ if __name__ == "__main__":
 
     SEED_MC = args.seed_mc
     
-    
-    for instance_num in range(args.start_conf, args.num_conf):
+    if REPS is None and len(N_STEPS_MC) <= 1:
+        for instance_num in range(args.start_conf, args.num_conf):
         ### determine name files
-        if REPS is None and len(N_STEPS_MC) <= 1:
+        
             ## simple
             myargs = make_run_args(data_, instance_num, base_name_file, args,
             INSTANCE, contacts, nsteps=args.n_steps, seed=args.seed_mc)
 
             run_crisp_save(myargs)
-        else:
+    else:
+        ALL_ARGS = []
+        for instance_num in range(args.start_conf, args.num_conf):
             if args.n_proc is None:
                 warnings.warn("Using the number of cores for the number of processes, set `n_proc` instead")
             ## do not have to add the repetitions
-            ALL_ARGS = []
+            
             m_args = lambda nst, nam_file, s : make_run_args(data_, instance_num, nam_file, args,
                     INSTANCE, contacts, nsteps=nst, seed=s
                                     )
@@ -228,9 +230,9 @@ if __name__ == "__main__":
                         ALL_ARGS.append(m_args(n_s, mname, s))
             
 
-            ## run with multiprocessing
-            print("ARGS: ", len(ALL_ARGS))
-            with MultiProcPool(processes=args.n_proc) as pool:
-                #res = pool.imap(run_crisp_save, ALL_ARGS, chunksize=10)
-                results = [pool.apply_async(run_crisp_save, args=(w,)) for w in ALL_ARGS]
-                results = [p.get() for p in results]
+        ## run with multiprocessing
+        print("ARGS: ", len(ALL_ARGS))
+        with MultiProcPool(processes=args.n_proc) as pool:
+            #res = pool.imap(run_crisp_save, ALL_ARGS, chunksize=10)
+            results = [pool.apply_async(run_crisp_save, args=(w,)) for w in ALL_ARGS]
+            results = [p.get() for p in results]
