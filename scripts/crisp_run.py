@@ -148,6 +148,9 @@ if __name__ == "__main__":
     mu = args.mu
     p_source = args.p_source
     p_sus = args.p_sus
+    
+    
+        
 
     if args.n_steps is not None and args.n_steps_list is not None:
         raise ValueError("Cannot give both `n_steps` and `n_steps_list` arguments")
@@ -175,6 +178,10 @@ if __name__ == "__main__":
     
     confs = np.array(data_["test"])
     print("We have {} epidemies".format(len(confs)))
+    
+    if args.p_source <= 0:
+        print("Setting p source to 1/N={:.4f}".format(1/INSTANCE.n))
+        args.p_source = 1/INSTANCE.n
     
 
 ## ************ RUN INFERENCE ALGORITHMS ************
