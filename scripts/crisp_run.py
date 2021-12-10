@@ -103,7 +103,7 @@ def run_crisp_save(data_in):
     if (n_burn - np.floor(n_burn) ) >=1e-12:
         ## convert the burnin
         assert n_burn < 1
-        n_min_record = min(1000, nsteps)
+        n_min_record = min(max(9.5*INSTANCE.n,2000), nsteps)
         if nsteps - n_min_record < 0.99*nsteps:
             n_burnin_max = nsteps - n_min_record
         else:
@@ -124,7 +124,7 @@ def run_crisp_save(data_in):
         '''
         print("\n\tSetting seed ", seed_mc)
 
-    ecc1, stats, ecc = crisp_sir.run_crisp(pars_crisp, observ=obs_list,
+    ecc1, stats, changes = crisp_sir.run_crisp(pars_crisp, observ=obs_list,
         contacts=contacts,
         num_samples=nsteps,
         mat_obs=mat_obs,
@@ -137,14 +137,24 @@ def run_crisp_save(data_in):
     
     print("Done, saving marginals and script arguments...")
 
+
     all_args = vars(args)
     all_args["running_time"] = taken_t
     all_args["n_burnin_steps"] = n_burn
+    #changes_df = pd.DataFrame(changes,columns=["u","t0","dinf","p"])
+    #changes_df.to_parquet(name_file_instance+"_changes.parquet")
     
     with open(name_file_instance+"_args.json","w") as mfile:
         json.dump(all_args,mfile, indent=1)
     
+    counts_choose = stats.sum(-1).min(-1)
+    if np.any(counts_choose <= 0):
+        print(f"seed: {args.seed}, lambda: {INSTANCE.lambda_}:\n"
+        +"nodes {} have never been selected".format(tuple(np.where(counts_choose==0)[0])))
+    
     margs = stats / stats.sum(-1)[...,np.newaxis]
+    if np.any(np.isnan(margs)):
+        print("nan:\n",np.stack(np.isnan(margs).any(-1).any(-1).nonzero(),1))
     init_c = margs[:,0].sum(0)
     
     print("Init state: "," ".join(f"{cc}:{vv:.3f}" for cc,vv in zip(["S","I","R"], init_c)))
