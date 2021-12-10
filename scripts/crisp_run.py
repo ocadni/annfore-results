@@ -17,6 +17,7 @@ sys.path.append(os.fspath(path_script.parent/"src"))
 
 
 from utils.script_utils import create_parser, create_data_, get_name_file_instance, get_base_name_file
+from utils.common import pretty_print_n
 try:
     import crisp_sir
 except ImportError:
@@ -34,7 +35,7 @@ def add_arg_parser(parser):
     parser.add_argument("--seed_mc", type=int, default=None)
     parser.add_argument('--p_wrong_obs', type=float, default=1e-6, help="prob of wrong observations")
     
-    parser.add_argument('--n_burnin', type=int, default=100, help="number of MC to ignore (burn in)")
+    parser.add_argument('--n_burnin', type=float, default=100, help="number of MC to ignore (burn in)")
 
     parser.add_argument('--n_proc', type=int, default=None, help="number of processes")
     parser.add_argument("--rep_range", type=int, nargs=2, help="repetition range", default=None)
@@ -98,6 +99,19 @@ def run_crisp_save(data_in):
         obs_list = obs_init_list
     
     obs_list.sort(key=lambda tup: tup[0])
+    n_burn = args.n_burnin
+    if (n_burn - np.floor(n_burn) ) >=1e-12:
+        ## convert the burnin
+        assert n_burn < 1
+        n_min_record = min(1000, nsteps)
+        if nsteps - n_min_record < 0.99*nsteps:
+            n_burnin_max = nsteps - n_min_record
+        else:
+            n_burnin_max = 0.99*nsteps
+        n_burn = int(min(n_burn* nsteps, n_burnin_max))
+        print("Setting {} burnin steps".format(pretty_print_n(n_burn)))
+    else:
+        n_burn = int(n_burn)
 
     t_v = time.time()
     if seed_mc is not None:
@@ -114,7 +128,7 @@ def run_crisp_save(data_in):
         contacts=contacts,
         num_samples=nsteps,
         mat_obs=mat_obs,
-        burn_in=args.n_burnin,
+        burn_in=n_burn,
         seed=seed_mc,
         start_inf=True,
         )
@@ -124,7 +138,8 @@ def run_crisp_save(data_in):
     print("Done, saving marginals and script arguments...")
 
     all_args = vars(args)
-    all_args["running_time"] = taken_t 
+    all_args["running_time"] = taken_t
+    all_args["n_burnin_steps"] = n_burn
     
     with open(name_file_instance+"_args.json","w") as mfile:
         json.dump(all_args,mfile, indent=1)
@@ -182,6 +197,11 @@ if __name__ == "__main__":
     if args.p_source <= 0:
         print("Setting p source to 1/N={:.4f}".format(1/INSTANCE.n))
         args.p_source = 1/INSTANCE.n
+    n_bin = args.n_burnin
+    if (n_bin - np.floor(n_bin)) >= 1e-12:
+        print("Setting burnin as fraction")
+        if n_bin > 1:
+            raise ValueError("Cannot have a burnin bigger than 100%")
     
 
 ## ************ RUN INFERENCE ALGORITHMS ************
