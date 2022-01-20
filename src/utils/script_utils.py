@@ -109,7 +109,7 @@ def create_data_(args, give_instance=False, use_inst_name=False):
                     unique_ninf=args.unique_numinf,
                     verbose=args.verbose_gen
                        )
-
+    t_limit = data_["params"]["t_limit"]
     
     if data_ == None:
         if give_instance:
