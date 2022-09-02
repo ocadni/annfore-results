@@ -170,9 +170,10 @@ if __name__ == "__main__":
     #+1 t_limit times || +1 obs after contacts || +1 for susceptible
     contacts = data_["contacts"]
     N = int(max(contacts[:, 1]) + 1)
-    t_limit = args.t_limit
-    mu = args.mu
-    print("PSUS: ", args.p_sus)
+    t_limit = INSTANCE.t_limit #args.t_limit
+    mu = INSTANCE.mu
+    print("Instance: ", repr(INSTANCE))
+    print("PSUS: ", args.p_sus,f"t_limit: {t_limit}")
 
     BIAS_NETS = not args.no_bias
     print("BIAS: ", BIAS_NETS)
@@ -181,7 +182,7 @@ if __name__ == "__main__":
     if p_source < 0:
         p_source = 1/N
     if p_mc < 0:
-        p_mc = np.exp(np.log(p_source) - args.t_limit)
+        p_mc = np.exp(np.log(p_source) - t_limit)
     if p_obs < 0:
         p_obs = p_mc
     
@@ -328,7 +329,7 @@ if __name__ == "__main__":
                 optimizer.append(make_opt(my_net.params_i[i], lr=lr))
             else:
                 optimizer.append([])
-        t_obs = args.t_obs
+        t_obs = args.t_obs if args.t_obs <= t_limit else t_limit
         step = args.step
         if args.n_beta_steps > 0:
             if args.exp_like_beta:

@@ -6,7 +6,7 @@ import numpy as np
 
 from epigen import epidemy_gen_new, EpInstance
 import epigen.generators as generat
-from epigen import gen_observ
+from epigen import observ_gen
 
 
 def create_parser():
@@ -109,7 +109,7 @@ def create_data_(args, give_instance=False, use_inst_name=False):
                     unique_ninf=args.unique_numinf,
                     verbose=args.verbose_gen
                        )
-
+    t_limit = data_["params"]["t_limit"]
     
     if data_ == None:
         if give_instance:
@@ -131,16 +131,16 @@ def create_data_(args, give_instance=False, use_inst_name=False):
             p_test_delay = np.array(p_test_delay)/sum(p_test_delay)
         ## get full epidemies
         if args.sparse_obs_last:
-            obs_df, obs_json = gen_observ.make_sparse_obs_last_t(data_,
+            obs_df, obs_json = observ_gen.make_sparse_obs_last_t(data_,
                 t_limit, pr_sympt=pr_sympt, seed=seed, verbose=args.verbose_gen,
                 )
         else:
-            obs_df, obs_json = gen_observ.make_sparse_obs_default(data_,
+            obs_df, obs_json = observ_gen.make_sparse_obs_default(data_,
                     t_limit, ntests=ntests, pr_sympt=pr_sympt,
                     p_test_delay=p_test_delay, seed=seed, verbose=args.verbose_gen,
                     min_t_inf=args.sp_obs_min_tinf)
         for df in obs_df:
-            df["obs_st"] = tuple(gen_observ.convert_obs_list_numeric(df["obs"]))
+            df["obs_st"] = tuple(observ_gen.convert_obs_list_numeric(df["obs"]))
         data_["observ_df"] = obs_df
         data_["observ_dict"] = obs_json
         #print(obs_df[0])
@@ -162,7 +162,7 @@ def create_data_(args, give_instance=False, use_inst_name=False):
 
     name_file = path_dir + "/" + args.str_name_file
     if use_inst_name:
-        name_file += str(inst)
+        name_file = get_name_file_instance(args, args.str_name_file, inst)
     else:
         name_file += f"N_{N}_d_{d}_h_{h}_T_{t_limit}_lam_{lambda_}_mu_{mu}_p_edge_{p_edge}"
         name_file += f"_s_{seed}"
@@ -172,3 +172,17 @@ def create_data_(args, give_instance=False, use_inst_name=False):
         return data_, name_file, inst
     else:
         return data_, name_file
+
+
+def get_name_file_instance(args, str_name_f, instance):
+    path_dir = args.path_dir
+    if args.path_dir == "not_setted":
+        path_dir = args.type_graph
+    path_fold = Path(path_dir)
+    return str(path_fold / str_name_f) + str(instance)
+
+def get_base_name_file(args):
+    """
+    helper function
+    """
+    return args.str_name_file

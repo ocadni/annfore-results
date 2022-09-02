@@ -39,7 +39,7 @@ def get_obs_idx(obs_df, states=(1,2)):
 def get_err_rocs(margs, nodes_idx, fin_conf, states=(1,), t_obs=-1):
     """
     Calculate roc curve in finding nodes in state `state`
-    with marginals `margs` (NxT)
+    with marginals `margs` (NxTxq)
     """
     true_states = fin_conf[list(nodes_idx)]
     inf_r_p = margs[list(nodes_idx),t_obs]
