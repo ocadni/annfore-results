@@ -157,6 +157,8 @@ if __name__ == "__main__":
 
     data_, name_file, INSTANCE = create_data_(args,give_instance=True,
                                     use_inst_name=True)
+
+    print(f"Saving to file: {name_file}")
     if data_ == None:
         quit()
     if args.sparse_obs:

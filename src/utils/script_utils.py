@@ -1,10 +1,12 @@
 import argparse
 from pathlib import Path
+from unicodedata import name
 import warnings
 
 import numpy as np
+import pandas as pd
 
-from epigen import epidemy_gen_new, EpInstance
+from epigen import epidemy_gen_epinstance, EpInstance
 import epigen.generators as generat
 from epigen import observ_gen
 
@@ -33,6 +35,9 @@ def create_parser():
     parser.add_argument('--path_dir', type=str, default="not_setted", dest="path_dir", help="path_dir")
     parser.add_argument('--num_conf', type=int, default=10, dest="num_conf", help="num_conf with observations")
     parser.add_argument("--n_sources", type=int, default=1, help="Number of sources (seeds) for the epidemic cascades")
+
+    parser.add_argument("--p_gen", type=float, default=None,
+        help="prob used in the random graph generation (gnp, WS)")
     parser.add_argument('--start_conf', type=int, default=0, dest="start_conf", help="starting number of the range of configurations to be computed")
     parser.add_argument('--lambda_init_param', type=float, default=0.1, dest="lambda_init_param", help="lambda starting value of the learning")
     parser.add_argument('--mu_init_param', type=float, default=0.1, dest="mu_init_param", help="mu starting value of the learning")
@@ -59,6 +64,9 @@ def create_parser():
         help="List of probabilities for the time delay in testing symptomatic individuals, starting from 0. Enter one probability after the other, they will get normalized")
     parser.add_argument("--save_data_confs", action="store_true", 
             help="Save data of generated epidemies")
+
+    parser.add_argument("--sp_obs_single", action="store_true", 
+        help="Generate one obs for each node that is observed. Uses only '--pr_sympt' as pr. of obs for a node")
     
 
 
@@ -96,19 +104,24 @@ def create_data_(args, give_instance=False, use_inst_name=False):
     if args.path_dir == "not_setted":
         path_dir = type_graph
 
-    data_ = epidemy_gen_new(
-                    type_graph = type_graph,
-                    t_limit=t_limit,
-                    mu=mu, 
+    mInstance = EpInstance(type_graph=args.type_graph,
+        n=args.N,
+        d=args.d,
+        t_limit=args.t_limit,
+        lamda=args.lambda_,
+        mu=args.mu, seed=args.seed,
+        p_edge=args.p_edge,
+        n_source=args.n_sources)
+
+    data_ = epidemy_gen_epinstance(mInstance,
                     lim_infected=args.ninf_min,
                     max_infected=args.ninf_max,
-                    seed=seed,
                     num_conf=num_conf,
-                    num_sources=args.n_sources,
-                    data_gen=data_gen,
+                    extra_gen=data_gen,
                     unique_ninf=args.unique_numinf,
                     verbose=args.verbose_gen
-                       )
+                    )
+
     t_limit = data_["params"]["t_limit"]
     
     if data_ == None:
@@ -130,17 +143,29 @@ def create_data_(args, give_instance=False, use_inst_name=False):
         else:
             p_test_delay = np.array(p_test_delay)/sum(p_test_delay)
         ## get full epidemies
-        if args.sparse_obs_last:
-            obs_df, obs_json = observ_gen.make_sparse_obs_last_t(data_,
-                t_limit, pr_sympt=pr_sympt, seed=seed, verbose=args.verbose_gen,
-                )
+        if args.sp_obs_single:
+            if args.sparse_obs_last:
+                t_obs = t_limit
+            else:
+                t_obs = None
+
+            g = observ_gen.gen_obs_custom(data_, mInstance, gen_obs_single_t, seed=seed,
+                p_choose=pr_sympt, t_obs=t_obs)
+            obs_df = [pd.DataFrame(x, columns=["node","obs_st","time"]).sort_values("time") for x in g]
+
+            obs_json = None      
         else:
-            obs_df, obs_json = observ_gen.make_sparse_obs_default(data_,
-                    t_limit, ntests=ntests, pr_sympt=pr_sympt,
-                    p_test_delay=p_test_delay, seed=seed, verbose=args.verbose_gen,
-                    min_t_inf=args.sp_obs_min_tinf)
-        for df in obs_df:
-            df["obs_st"] = tuple(observ_gen.convert_obs_list_numeric(df["obs"]))
+            if args.sparse_obs_last:
+                obs_df, obs_json = observ_gen.make_sparse_obs_last_t(data_,
+                    t_limit, pr_sympt=pr_sympt, seed=seed, verbose=args.verbose_gen,
+                    )
+            else:
+                obs_df, obs_json = observ_gen.make_sparse_obs_default(data_,
+                        t_limit, ntests=ntests, pr_sympt=pr_sympt,
+                        p_test_delay=p_test_delay, seed=seed, verbose=args.verbose_gen,
+                        min_t_inf=args.sp_obs_min_tinf)
+            for df in obs_df:
+                df["obs_st"] = tuple(observ_gen.convert_obs_list_numeric(df["obs"]))
         data_["observ_df"] = obs_df
         data_["observ_dict"] = obs_json
         #print(obs_df[0])
@@ -154,18 +179,18 @@ def create_data_(args, give_instance=False, use_inst_name=False):
     contacts = data_["contacts"]
     N = int(max(contacts[:, 1]) + 1)
 
-    inst = EpInstance(type_graph=type_graph, n=N, d=d,
-        t_limit=t_limit, lamda=lambda_, mu=mu, seed=seed, p_edge=p_edge,
-        n_source=args.n_sources)
+    inst = mInstance
     
     ## ************ CREATE NAME FILE  ************
 
-    name_file = path_dir + "/" + args.str_name_file
+    name_file = args.str_name_file #(path_save / args.str_name_file).as_posix() #path_dir + "/" + args.str_name_file
     if use_inst_name:
-        name_file = get_name_file_instance(args, args.str_name_file, inst)
+        name_file += str(inst) #get_name_file_instance(args, args.str_name_file, inst)
     else:
         name_file += f"N_{N}_d_{d}_h_{h}_T_{t_limit}_lam_{lambda_}_mu_{mu}_p_edge_{p_edge}"
         name_file += f"_s_{seed}"
+    
+    name_file = (path_save / name_file).as_posix()
     #name_file += f"_h_source_{h_source}_h_log_p_{h_log_p}_h_obs_{h_obs}"
     #print(name_file)
     if give_instance:
@@ -175,6 +200,7 @@ def create_data_(args, give_instance=False, use_inst_name=False):
 
 
 def get_name_file_instance(args, str_name_f, instance):
+    ## probably unused
     path_dir = args.path_dir
     if args.path_dir == "not_setted":
         path_dir = args.type_graph
@@ -186,3 +212,21 @@ def get_base_name_file(args):
     helper function
     """
     return args.str_name_file
+
+def gen_obs_single_t(epitrace:np.ndarray, p_choose:float, seed=None, t_obs=None):
+    T, N = epitrace.shape
+
+    if seed == None:
+        rng = np.random
+    else:
+        rng = np.random.RandomState(np.random.PCG64(seed))
+
+    idcs = np.where(rng.rand(N) < p_choose)[0]
+    if t_obs is None:
+        times = rng.randint(0,T, len(idcs))
+    else:
+        times = np.full(len(idcs), int(t_obs))
+
+    obs = epitrace[times, idcs]
+
+    return list(zip(idcs, obs, times))
